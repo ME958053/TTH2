@@ -23,12 +23,9 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = HeaderAndFooter,
-    onPrimary = Text,
-    background = Color.Black,
-    surface = HeaderAndFooter,
-    onSurface = Text
-
+    primary = Purple80,
+    secondary = PurpleGrey80,
+    tertiary = Pink80
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),

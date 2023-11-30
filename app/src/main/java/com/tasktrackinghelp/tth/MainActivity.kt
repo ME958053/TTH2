@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,7 +67,7 @@ fun Title(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            MaterialTheme.colorScheme.primary,
+                            color = Color(0xFFA84166),
                             shape = RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp)
                         )
                         .padding(16.dp),
@@ -75,13 +78,13 @@ fun Title(modifier: Modifier = Modifier) {
                         text = "NavBar",
                         fontSize = 16.sp,
                         modifier = modifier.fillMaxWidth(),
-                        color = Color.White
+                        color = Color(0xFFf7eae8)
                     )
                     Text(
                         text = "Welcome",
                         fontSize = 50.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Color(0xFFf7eae8)
                     )
                 }
                 Box {
@@ -94,6 +97,7 @@ fun Title(modifier: Modifier = Modifier) {
                             modifier = Modifier
                                 .padding(18.dp),
                             fontSize = 24.sp,
+                            color = Color(0xFFa84165),
                             fontWeight = FontWeight.SemiBold,
                         )
                         Tasks(onClick = { /* TODO */ })
@@ -102,7 +106,9 @@ fun Title(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter)
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.8f))
+                            .background(
+                                color = Color(0xFFA84166).copy(alpha = 0.8f)
+                            )
                             .padding(24.dp),
                         verticalArrangement = Arrangement.SpaceBetween,
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -110,6 +116,7 @@ fun Title(modifier: Modifier = Modifier) {
                         Row (
                             modifier = modifier
                                 .fillMaxWidth()
+
                                 .padding(vertical = 4.dp, horizontal = 8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -150,15 +157,16 @@ fun Tasks(modifier: Modifier = Modifier, onClick: () -> Unit){
             ) {
                 for (day in rowOfDays) {
                     Button(
+
                         onClick = onClick,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .padding(8.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(12.dp)
-                            )
+                            .padding(8.dp),
+                                shape = RoundedCornerShape(10),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFf3c9d9),
+                                    contentColor = Color(0xFFa84165))
                     ) {
                         Column (
                             horizontalAlignment = Alignment.CenterHorizontally,
