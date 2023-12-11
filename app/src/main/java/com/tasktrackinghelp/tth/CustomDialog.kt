@@ -17,11 +17,13 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
@@ -54,7 +56,14 @@ fun customTextField(){
         value = value,
         onValueChange = { value = it },
         singleLine = true,
-        modifier = Modifier.padding(20.dp)
+        modifier = Modifier.padding(20.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = Color.Black,
+            cursorColor = Color.Black,
+            unfocusedTextColor = Color.Black
+        )
+
     )
 }
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +75,13 @@ fun customMultilineText(){
         value = value,
         onValueChange = { value = it },
         singleLine = false,
-        modifier = Modifier.padding(20.dp)
+        modifier = Modifier.padding(20.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = Color.Black,
+            cursorColor = Color.Black,
+            unfocusedTextColor = Color.Black
+        )
     )
 }
 
@@ -86,7 +101,15 @@ fun DateTextField() {
         placeholder = {Text("DD/MM/YYYY")},
         visualTransformation = MaskVisualTransformation(DATE_MASK),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        modifier = Modifier.padding(20.dp)
+        modifier = Modifier.padding(20.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = Color.Black,
+            cursorColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            disabledPlaceholderColor = Color.Black,
+            unfocusedPlaceholderColor = Color.Gray,
+        )
     )
 
 }
@@ -187,7 +210,19 @@ fun time(){
            enabled = false,
            modifier = Modifier
                .width(130.dp)
-               .height(60.dp)
+               .height(60.dp),
+           colors = OutlinedTextFieldDefaults.colors(
+               focusedBorderColor = MaterialTheme.colorScheme.primary,
+               focusedTextColor = Color.Black,
+               cursorColor = Color.Black,
+               unfocusedTextColor = Color.Black,
+               disabledPlaceholderColor = Color.Black,
+               unfocusedPlaceholderColor = Color.Gray,
+               disabledTextColor = Color.Gray,
+               disabledBorderColor = Color.Gray,
+               disabledLabelColor = Color.Gray,
+               disabledTrailingIconColor = MaterialTheme.colorScheme.primary
+           )
        )
        OutlinedTextField(value = "$selectedHour : $selectedMinute",
            label = { Text(text = "End") },
@@ -202,7 +237,19 @@ fun time(){
            modifier = Modifier
                .width(130.dp)
                .height(60.dp)
-               .padding(end = 20.dp)
+               .padding(end = 20.dp),
+           colors = OutlinedTextFieldDefaults.colors(
+               focusedBorderColor = MaterialTheme.colorScheme.primary,
+               focusedTextColor = Color.Black,
+               cursorColor = Color.Black,
+               unfocusedTextColor = Color.Black,
+               disabledPlaceholderColor = Color.Black,
+               unfocusedPlaceholderColor = Color.Gray,
+               disabledTextColor = Color.Gray,
+               disabledBorderColor = Color.Gray,
+               disabledLabelColor = Color.Gray,
+               disabledTrailingIconColor = MaterialTheme.colorScheme.primary
+           )
        )
    }
 
@@ -213,6 +260,7 @@ fun CustomDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
+
     Dialog(
         onDismissRequest = {
             onDismiss
@@ -224,8 +272,14 @@ fun CustomDialog(
         Card(
             shape = RoundedCornerShape(15.dp),
             modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .border(1.dp, MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(15.dp))
+                .fillMaxWidth(0.95f)
+                .border(1.dp, MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(15.dp)),
+            colors = CardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = MaterialTheme.colorScheme.primary,
+                disabledContentColor = MaterialTheme.colorScheme.primary,
+            )
 
         ) {
             Column(

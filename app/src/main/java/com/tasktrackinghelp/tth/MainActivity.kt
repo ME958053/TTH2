@@ -3,6 +3,7 @@ package com.tasktrackinghelp.tth
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,10 +24,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,20 +38,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tasktrackinghelp.tth.ui.theme.PopupTheme
 import com.tasktrackinghelp.tth.ui.theme.TTHTheme
 
 class MainActivity : ComponentActivity() {
+    private val viewModel by viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TTHTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-//                    Greeting("Android")
-                }
+                PopupTheme {
+                    Title()                }
             }
         }
     }
@@ -118,7 +120,7 @@ fun Title(modifier: Modifier = Modifier) {
                             color = Color(0xFFa84165),
                             fontWeight = FontWeight.SemiBold,
                         )
-                        Tasks(onClick = { /* TODO */ })
+                        Tasks(viewModel = viewModel)
                     }
                     Column(
                         modifier = Modifier
@@ -157,7 +159,8 @@ fun Title(modifier: Modifier = Modifier) {
     }
 
 @Composable
-fun Tasks(modifier: Modifier = Modifier, onClick: () -> Unit){
+fun Tasks(    viewModel : MainViewModel
+){
     val days = listOf<String>(
         "Today",
         "Tomorrow",
@@ -167,7 +170,9 @@ fun Tasks(modifier: Modifier = Modifier, onClick: () -> Unit){
         "Saturday",
         "Sunday"
     )
-
+var menu by remember {
+    mutableStateOf(false)
+}
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -184,7 +189,7 @@ fun Tasks(modifier: Modifier = Modifier, onClick: () -> Unit){
                 for (day in rowOfDays) {
                     Button(
 
-                        onClick = onClick,
+                        onClick = {  menu = true  },
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
@@ -221,6 +226,12 @@ fun Tasks(modifier: Modifier = Modifier, onClick: () -> Unit){
                             )
                         }
                     }
+
+                    if(menu){
+                        menuDialog(onDismiss = { menu = false }) {
+                            menu = false
+                        }
+                    }
                 }
             }
         }
@@ -243,6 +254,8 @@ fun HomePage() {
 fun GreetingPreview() {
     val viewModel = MainViewModel() // Create an instance of your ViewModel
     TTHTheme {
-            HomePage()
+        PopupTheme {
+           Title()
+        }
     }
 }
