@@ -123,6 +123,7 @@ fun Content(
     // callback should be registered from outside
     onDateClickListener: (DaysUiModel.Date) -> Unit,
 ) {
+    val viewModel = MainViewModel() // Create an instance of your ViewModel
     LazyColumn (
         modifier = Modifier
             .fillMaxWidth()
@@ -139,7 +140,8 @@ fun Content(
             ) {
                 ContentItem(
                     date = date,
-                    onDateClickListener
+                    onDateClickListener,
+                    viewModel
                 )
             }
         }
@@ -149,14 +151,16 @@ fun Content(
 @Composable
 fun ContentItem(
     date: DaysUiModel.Date,
-    onClickListener: (DaysUiModel.Date) -> Unit, // still, callback should be registered from outside
+    onClickListener: (DaysUiModel.Date) -> Unit,
+    viewModel : MainViewModel// still, callback should be registered from outside
     ) {
     Card(
         modifier = Modifier
             .padding(vertical = 4.dp, horizontal = 4.dp)
             .clickable { // making the element clickable, by adding 'clickable' modifier
                 onClickListener(date)
-            }
+                viewModel.onAddClick()
+}
             .fillMaxWidth()
         ,
         colors = CardDefaults.cardColors(
@@ -182,5 +186,12 @@ fun ContentItem(
                 style = MaterialTheme.typography.headlineSmall,
             )
         }
+    }
+    if(viewModel.isDialogShown){
+        CustomDialog(
+            onDismiss = { viewModel.onDismissClick() },
+            onConfirm = { /*  DO Something*/},
+
+            )
     }
 }

@@ -68,7 +68,7 @@ fun customTextField(){
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun customMultilineText(){
+fun CustomMultilineText(){
     var value by remember { mutableStateOf("") }
 
     OutlinedTextField(
@@ -338,7 +338,7 @@ fun CustomDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Task Description")
-                        customMultilineText()
+                        CustomMultilineText()
                     }
 
                 }

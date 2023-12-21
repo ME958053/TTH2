@@ -128,7 +128,7 @@ fun BasicEvent(
     }
 }
 
-private val sampleEvents = listOf(
+val sampleEvents = listOf(
     Event(
         name = "Google I/O Keynote",
         color = Color(0xFFAFBBF2),
@@ -139,7 +139,7 @@ private val sampleEvents = listOf(
     Event(
         name = "Developer Keynote",
         color = Color(0xFFAFBBF2),
-        start = LocalDateTime.parse("2021-05-18T09:00:00"),
+        start = LocalDateTime.parse("2023-12-18T09:00:00"),
         end = LocalDateTime.parse("2021-05-18T10:00:00"),
         description = "Learn about the latest updates to our developer products and platforms from Google Developers.",
     ),
@@ -202,7 +202,7 @@ fun BasicDayHeader(
         modifier = modifier
             .fillMaxWidth()
             .padding(4.dp),
-        color = MaterialTheme.colorScheme.primary
+        color = MaterialTheme.colorScheme.onPrimary
     )
 }
 
@@ -215,7 +215,7 @@ fun ScheduleHeader(
     modifier: Modifier = Modifier,
     dayHeader: @Composable (day: LocalDate) -> Unit = { BasicDayHeader(day = it) },
 ) {
-    Row(modifier = modifier) {
+    Row(modifier = modifier.background(MaterialTheme.colorScheme.primary),) {
         val numDays = ChronoUnit.DAYS.between(minDate, maxDate).toInt() + 1
         repeat(numDays) { i ->
             Box(modifier = Modifier.width(dayWidth)) {
@@ -238,7 +238,7 @@ fun BasicSidebarLabel(
         modifier = modifier
             .fillMaxHeight()
             .padding(4.dp),
-        color = MaterialTheme.colorScheme.primary
+        color = MaterialTheme.colorScheme.onPrimary
 
     )
 }
@@ -398,7 +398,7 @@ fun Schedule(
             is ScheduleSize.FixedCount -> with(LocalDensity.current) { ((constraints.maxHeight - headerHeight) / hourSize.count).toDp() }
             is ScheduleSize.Adaptive -> with(LocalDensity.current) { maxOf(((constraints.maxHeight - headerHeight) / numHours).toDp(), hourSize.minSize) }
         }
-        Column(modifier = modifier) {
+        Column(modifier = modifier.background(MaterialTheme.colorScheme.primary)) {
             ScheduleHeader(
                 minDate = minDate,
                 maxDate = maxDate,
@@ -411,7 +411,10 @@ fun Schedule(
             )
             Row(modifier = Modifier
                 .weight(1f)
-                .align(Alignment.Start)) {
+                .align(Alignment.Start)
+                .background(MaterialTheme.colorScheme.primary)
+
+            ) {
                 ScheduleSidebar(
                     hourHeight = hourHeight,
                     minTime = minTime,
@@ -434,6 +437,8 @@ fun Schedule(
                         .weight(1f)
                         .verticalScroll(verticalScrollState)
                         .horizontalScroll(horizontalScrollState)
+                        .background(MaterialTheme.colorScheme.surface)
+
                 )
             }
         }

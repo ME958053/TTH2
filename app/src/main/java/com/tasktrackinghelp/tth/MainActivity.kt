@@ -35,7 +35,6 @@ fun GreetingPreview() {
     val viewModel = MainViewModel() // Create an instance of your ViewModel
     TTHTheme {
         PopupTheme {
-            BottomNavigationBar()
-        }
+            Schedule(sampleEvents)    }
     }
 }
