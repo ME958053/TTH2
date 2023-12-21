@@ -3,7 +3,7 @@ package com.tasktrackinghelp.tth
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-data class CalendarUiModel(
+data class DaysUiModel(
     val selectedDate: Date, // the date selected by the User. by default is Today.
     val visibleDates: List<Date> // the dates shown on the screen
 ) {

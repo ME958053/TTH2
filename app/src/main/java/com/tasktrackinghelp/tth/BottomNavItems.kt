@@ -24,7 +24,7 @@ data class BottomNavigationItem(
             BottomNavigationItem(
                 label = "Calendar",
                 icon = Icons.Filled.CalendarMonth,
-                route = Screens.Search.route
+                route = Screens.Calendar.route
             ),
             BottomNavigationItem(
                 label = "Settings",

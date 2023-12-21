@@ -71,7 +71,7 @@ fun CalendarApp(modifier: Modifier = Modifier) {
 
 @Composable
 fun Header(
-    data: CalendarUiModel,
+    data: DaysUiModel,
     // callbacks to click previous & back button should be registered outside
     onPrevClickListener: (LocalDate) -> Unit,
     onNextClickListener: (LocalDate) -> Unit,) {
@@ -119,9 +119,9 @@ fun Header(
 
 @Composable
 fun Content(
-    data: CalendarUiModel,
+    data: DaysUiModel,
     // callback should be registered from outside
-    onDateClickListener: (CalendarUiModel.Date) -> Unit,
+    onDateClickListener: (DaysUiModel.Date) -> Unit,
 ) {
     LazyColumn (
         modifier = Modifier
@@ -148,8 +148,8 @@ fun Content(
 
 @Composable
 fun ContentItem(
-    date: CalendarUiModel.Date,
-    onClickListener: (CalendarUiModel.Date) -> Unit, // still, callback should be registered from outside
+    date: DaysUiModel.Date,
+    onClickListener: (DaysUiModel.Date) -> Unit, // still, callback should be registered from outside
     ) {
     Card(
         modifier = Modifier

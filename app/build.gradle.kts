@@ -32,6 +32,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -50,6 +51,7 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:1.0.9")
     implementation ("androidx.navigation:navigation-compose:2.7.0-rc01")
     implementation("androidx.compose.material:material-icons-extended:1.2.0")
     implementation ("com.google.android.material:material:1.4.0")

@@ -57,7 +57,7 @@ fun BottomNavigationBar() {
                             }
                         },
                         colors = NavigationBarItemColors(
-                            selectedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedIndicatorColor = MaterialTheme.colorScheme.primary,
                             selectedIconColor = MaterialTheme.colorScheme.primary,
                             selectedTextColor = MaterialTheme.colorScheme.onPrimary,
                             unselectedIconColor = MaterialTheme.colorScheme.onPrimary,
@@ -79,8 +79,8 @@ fun BottomNavigationBar() {
                     navController
                 )
             }
-            composable(Screens.Search.route) {
-                SearchScreen(
+            composable(Screens.Calendar.route) {
+                CalendarScreen(
                     navController
                 )
             }
