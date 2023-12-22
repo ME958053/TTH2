@@ -54,7 +54,7 @@ fun CalendarApp(modifier: Modifier = Modifier) {
                 calendarUiModel = dataSource.getData(startDate = finalStartDate, lastSelectedDate = calendarUiModel.selectedDate.date)
             }
         )
-        Content(data = calendarUiModel, onDateClickListener = { date ->
+        Content(data = calendarUiModel, viewModel = MainViewModel() ,onDateClickListener = { date ->
             // refresh the CalendarUiModel with new data
             // by changing only the `selectedDate` with the date selected by User
             calendarUiModel = calendarUiModel.copy(
@@ -122,6 +122,7 @@ fun Content(
     data: DaysUiModel,
     // callback should be registered from outside
     onDateClickListener: (DaysUiModel.Date) -> Unit,
+    viewModel: MainViewModel
 ) {
     val viewModel = MainViewModel() // Create an instance of your ViewModel
     LazyColumn (
@@ -140,8 +141,11 @@ fun Content(
             ) {
                 ContentItem(
                     date = date,
-                    onDateClickListener,
-                    viewModel
+                    onClickListener = { date, viewModel ->
+                        // Update the date state or perform other actions
+                        viewModel.onAddClick() // Now control the dialog visibility here
+                        // Other actions
+                    }, viewModel = viewModel
                 )
             }
         }
@@ -151,17 +155,17 @@ fun Content(
 @Composable
 fun ContentItem(
     date: DaysUiModel.Date,
-    onClickListener: (DaysUiModel.Date) -> Unit,
-    viewModel : MainViewModel// still, callback should be registered from outside
+    onClickListener: (DaysUiModel.Date, MainViewModel) -> Unit,
+    viewModel: MainViewModel
     ) {
     Card(
         modifier = Modifier
             .padding(vertical = 4.dp, horizontal = 4.dp)
             .clickable { // making the element clickable, by adding 'clickable' modifier
-                onClickListener(date)
-                viewModel.onAddClick()
-}
+                onClickListener(date, viewModel)
+            }
             .fillMaxWidth()
+
         ,
         colors = CardDefaults.cardColors(
             // background colors of the selected date
@@ -188,9 +192,12 @@ fun ContentItem(
         }
     }
     if(viewModel.isDialogShown){
-        CustomDialog(
+        AddTaskDialog(
             onDismiss = { viewModel.onDismissClick() },
-            onConfirm = { /*  DO Something*/},
+            onConfirm = { event ->
+                viewModel.addEvent(event)
+                        },
+            viewModel = MainViewModel()
 
             )
     }

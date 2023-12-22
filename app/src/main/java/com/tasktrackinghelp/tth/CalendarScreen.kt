@@ -1,7 +1,9 @@
 package com.tasktrackinghelp.tth
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,6 +39,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,14 +50,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tasktrackinghelp.tth.ui.theme.PopupTheme
 import com.tasktrackinghelp.tth.ui.theme.TTHTheme
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAdjusters
 import kotlin.math.roundToInt
 
-inline class SplitType private constructor(val value: Int) {
+
+@JvmInline
+value class SplitType private constructor(val value: Int) {
     companion object {
         val None = SplitType(0)
         val Start = SplitType(1)
@@ -103,7 +115,7 @@ fun BasicEvent(
             style = MaterialTheme.typography.headlineSmall,
             maxLines = 1,
             overflow = TextOverflow.Clip,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.onPrimary
         )
 
         Text(
@@ -112,7 +124,8 @@ fun BasicEvent(
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.onPrimary
+
         )
 
         if (event.description != null) {
@@ -121,65 +134,35 @@ fun BasicEvent(
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onPrimary
 
             )
         }
     }
 }
 
-val sampleEvents = listOf(
-    Event(
-        name = "Google I/O Keynote",
-        color = Color(0xFFAFBBF2),
-        start = LocalDateTime.parse("2021-05-18T09:00:00"),
-        end = LocalDateTime.parse("2021-05-18T11:00:00"),
-        description = "Tune in to find out about how we're furthering our mission to organize the world’s information and make it universally accessible and useful.",
-    ),
-    Event(
-        name = "Developer Keynote",
-        color = Color(0xFFAFBBF2),
-        start = LocalDateTime.parse("2023-12-18T09:00:00"),
-        end = LocalDateTime.parse("2021-05-18T10:00:00"),
-        description = "Learn about the latest updates to our developer products and platforms from Google Developers.",
-    ),
-    Event(
-        name = "What's new in Android",
-        color = Color(0xFF1B998B),
-        start = LocalDateTime.parse("2021-05-18T10:00:00"),
-        end = LocalDateTime.parse("2021-05-18T11:00:00"),
-        description = "In this Keynote, Chet Haase, Dan Sandler, and Romain Guy discuss the latest Android features and enhancements for developers.",
-    ),
-    Event(
-        name = "What's new in Material Design",
-        color = Color(0xFF6DD3CE),
-        start = LocalDateTime.parse("2021-05-18T11:00:00"),
-        end = LocalDateTime.parse("2021-05-18T11:45:00"),
-        description = "Learn about the latest design improvements to help you build personal dynamic experiences with Material Design.",
-    ),
-    Event(
-        name = "What's new in Machine Learning",
-        color = Color(0xFFF4BFDB),
-        start = LocalDateTime.parse("2021-05-18T10:00:00"),
-        end = LocalDateTime.parse("2021-05-18T11:00:00"),
-        description = "Learn about the latest and greatest in ML from Google. We’ll cover what’s available to developers when it comes to creating, understanding, and deploying models for a variety of different applications.",
-    ),
-    Event(
-        name = "What's new in Machine Learning",
-        color = Color(0xFFF4BFDB),
-        start = LocalDateTime.parse("2021-05-18T10:30:00"),
-        end = LocalDateTime.parse("2021-05-18T11:30:00"),
-        description = "Learn about the latest and greatest in ML from Google. We’ll cover what’s available to developers when it comes to creating, understanding, and deploying models for a variety of different applications.",
-    ),
-    Event(
-        name = "Jetpack Compose Basics",
-        color = Color(0xFF1B998B),
-        start = LocalDateTime.parse("2021-05-20T12:00:00"),
-        end = LocalDateTime.parse("2021-05-20T13:00:00"),
-        description = "This Workshop will take you through the basics of building your first app with Jetpack Compose, Android's new modern UI toolkit that simplifies and accelerates UI development on Android.",
-    ),
-)
+private val sampleEvents = mutableListOf<Event>().apply {
+    val today = LocalDate.now()
+    val nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY))
+    val nextSunday = nextMonday.plusDays(6) // Sunday of the next week
 
+    // Generate an event for each day of the next week
+    for (day in 0..ChronoUnit.DAYS.between(nextMonday, nextSunday).toInt()) {
+        val eventDay = nextMonday.plusDays(day.toLong())
+        val startTime = LocalDateTime.of(eventDay, LocalTime.of(9, 0))
+        val endTime = LocalDateTime.of(eventDay, LocalTime.of(10, 0))
+
+        add(
+            Event(
+                name = "Event on ${eventDay.dayOfWeek}",
+                color = Color(0xFFA84166), // Adjust the color as needed
+                start = startTime,
+                end = endTime,
+                description = "Sample event for ${eventDay.dayOfWeek} of next week"
+            )
+        )
+    }
+}
 class EventsProvider : PreviewParameterProvider<Event> {
     override val values = sampleEvents.asSequence()
 }
@@ -203,6 +186,7 @@ fun BasicDayHeader(
             .fillMaxWidth()
             .padding(4.dp),
         color = MaterialTheme.colorScheme.onPrimary
+
     )
 }
 
@@ -215,7 +199,10 @@ fun ScheduleHeader(
     modifier: Modifier = Modifier,
     dayHeader: @Composable (day: LocalDate) -> Unit = { BasicDayHeader(day = it) },
 ) {
-    Row(modifier = modifier.background(MaterialTheme.colorScheme.primary),) {
+    val numDays = ChronoUnit.DAYS.between(minDate, maxDate).toInt() + 1
+    val scrollState = rememberScrollState()
+    Row(modifier = modifier
+        .background(MaterialTheme.colorScheme.primary)) {
         val numDays = ChronoUnit.DAYS.between(minDate, maxDate).toInt() + 1
         repeat(numDays) { i ->
             Box(modifier = Modifier.width(dayWidth)) {
@@ -370,6 +357,9 @@ sealed class ScheduleSize {
 fun Schedule(
     events: List<Event>,
     modifier: Modifier = Modifier,
+    dayWidth: Dp,
+    startDay: LocalDate,
+    endDay: LocalDate,
     eventContent: @Composable (positionedEvent: PositionedEvent) -> Unit = { BasicEvent(positionedEvent = it) },
     dayHeader: @Composable (day: LocalDate) -> Unit = { BasicDayHeader(day = it) },
     timeLabel: @Composable (time: LocalTime) -> Unit = { BasicSidebarLabel(time = it) },
@@ -387,7 +377,9 @@ fun Schedule(
     val horizontalScrollState = rememberScrollState()
     var sidebarWidth by remember { mutableStateOf(0) }
     var headerHeight by remember { mutableStateOf(0) }
-    BoxWithConstraints(modifier = modifier) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val totalDayWidth = dayWidth * 7 // Assuming 7 days in a week
+        val scrollableWidth = with(LocalDensity.current) { totalDayWidth.toPx().roundToInt() }
         val dayWidth: Dp = when (daySize) {
             is ScheduleSize.FixedSize -> daySize.size
             is ScheduleSize.FixedCount -> with(LocalDensity.current) { ((constraints.maxWidth - sidebarWidth) / daySize.count).toDp() }
@@ -398,23 +390,23 @@ fun Schedule(
             is ScheduleSize.FixedCount -> with(LocalDensity.current) { ((constraints.maxHeight - headerHeight) / hourSize.count).toDp() }
             is ScheduleSize.Adaptive -> with(LocalDensity.current) { maxOf(((constraints.maxHeight - headerHeight) / numHours).toDp(), hourSize.minSize) }
         }
-        Column(modifier = modifier.background(MaterialTheme.colorScheme.primary)) {
+        Column(modifier = modifier
+            .background(MaterialTheme.colorScheme.primary)) {
             ScheduleHeader(
-                minDate = minDate,
-                maxDate = maxDate,
+                minDate = startDay,
+                maxDate = endDay,
                 dayWidth = dayWidth,
                 dayHeader = dayHeader,
                 modifier = Modifier
                     .padding(start = with(LocalDensity.current) { sidebarWidth.toDp() })
                     .horizontalScroll(horizontalScrollState)
                     .onGloballyPositioned { headerHeight = it.size.height }
+                    .background(MaterialTheme.colorScheme.primary)
             )
             Row(modifier = Modifier
-                .weight(1f)
                 .align(Alignment.Start)
-                .background(MaterialTheme.colorScheme.primary)
-
-            ) {
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)) {
                 ScheduleSidebar(
                     hourHeight = hourHeight,
                     minTime = minTime,
@@ -423,6 +415,7 @@ fun Schedule(
                     modifier = Modifier
                         .verticalScroll(verticalScrollState)
                         .onGloballyPositioned { sidebarWidth = it.size.width }
+                        .background(MaterialTheme.colorScheme.primary)
                 )
                 BasicSchedule(
                     events = events,
@@ -434,11 +427,8 @@ fun Schedule(
                     dayWidth = dayWidth,
                     hourHeight = hourHeight,
                     modifier = Modifier
-                        .weight(1f)
                         .verticalScroll(verticalScrollState)
                         .horizontalScroll(horizontalScrollState)
-                        .background(MaterialTheme.colorScheme.surface)
-
                 )
             }
         }
@@ -450,18 +440,23 @@ fun BasicSchedule(
     events: List<Event>,
     modifier: Modifier = Modifier,
     eventContent: @Composable (positionedEvent: PositionedEvent) -> Unit = { BasicEvent(positionedEvent = it) },
-    minDate: LocalDate = events.minByOrNull(Event::start)?.start?.toLocalDate() ?: LocalDate.now(),
-    maxDate: LocalDate = events.maxByOrNull(Event::end)?.end?.toLocalDate() ?: LocalDate.now(),
+    minDate: LocalDate ,
+    maxDate: LocalDate,
     minTime: LocalTime = LocalTime.MIN,
     maxTime: LocalTime = LocalTime.MAX,
     dayWidth: Dp,
     hourHeight: Dp,
 ) {
+    val visibleEvents = events.filter { event ->
+        val eventDate = event.start.toLocalDate()
+        !(eventDate.isBefore(minDate) || eventDate.isAfter(maxDate))
+    }
     val numDays = ChronoUnit.DAYS.between(minDate, maxDate).toInt() + 1
     val numMinutes = ChronoUnit.MINUTES.between(minTime, maxTime).toInt() + 1
     val numHours = numMinutes / 60
     val dividerColor =  MaterialTheme.colorScheme.primary
     val positionedEvents = remember(events) { arrangeEvents(splitEvents(events.sortedBy(Event::start))).filter { it.end > minTime && it.start < maxTime } }
+
     Layout(
         content = {
             positionedEvents.forEach { positionedEvent ->
@@ -471,9 +466,14 @@ fun BasicSchedule(
             }
         },
         modifier = modifier
+            .fillMaxWidth()
             .drawBehind {
                 val firstHour = minTime.truncatedTo(ChronoUnit.HOURS)
-                val firstHourOffsetMinutes = if (firstHour == minTime) 0 else ChronoUnit.MINUTES.between(minTime, firstHour.plusHours(1))
+                val firstHourOffsetMinutes =
+                    if (firstHour == minTime) 0 else ChronoUnit.MINUTES.between(
+                        minTime,
+                        firstHour.plusHours(1)
+                    )
                 val firstHourOffset = (firstHourOffsetMinutes / 60f) * hourHeight.toPx()
                 repeat(numHours) {
                     drawLine(
@@ -491,10 +491,21 @@ fun BasicSchedule(
                         strokeWidth = 1.dp.toPx()
                     )
                 }
+                for (dayIndex in 0 until 7) {
+                    val lineX = dayWidth.toPx() * dayIndex
+                    drawLine(
+                        color = dividerColor,
+                        start = Offset(x = lineX, y = 0f),
+                        end = Offset(x = lineX, y = size.height),
+                        strokeWidth = 1.dp.toPx()
+                    )
+                }
             }
     ) { measureables, constraints ->
+
+
+        val width = dayWidth.roundToPx() * 7
         val height = (hourHeight.toPx() * (numMinutes / 60f)).roundToInt()
-        val width = dayWidth.roundToPx() * numDays
         val placeablesWithEvents = measureables.map { measurable ->
             val splitEvent = measurable.parentData as PositionedEvent
             val eventDurationMinutes = ChronoUnit.MINUTES.between(splitEvent.start, minOf(splitEvent.end, maxTime))
@@ -505,27 +516,81 @@ fun BasicSchedule(
         }
         layout(width, height) {
             placeablesWithEvents.forEach { (placeable, splitEvent) ->
-                val eventOffsetMinutes = if (splitEvent.start > minTime) ChronoUnit.MINUTES.between(minTime, splitEvent.start) else 0
-                val eventY = ((eventOffsetMinutes / 60f) * hourHeight.toPx()).roundToInt()
-                val eventOffsetDays = ChronoUnit.DAYS.between(minDate, splitEvent.date).toInt()
-                val eventX = eventOffsetDays * dayWidth.roundToPx() + (splitEvent.col * (dayWidth.toPx() / splitEvent.colTotal.toFloat())).roundToInt()
-                placeable.place(eventX, eventY)
+                if (!splitEvent.date.isBefore(minDate ) && !splitEvent.date.isAfter(maxDate)){
+                    val eventOffsetMinutes = if (splitEvent.start > minTime) ChronoUnit.MINUTES.between(minTime, splitEvent.start) else 0
+                    val eventY = ((eventOffsetMinutes / 60f) * hourHeight.toPx()).roundToInt()
+                    val eventOffsetDays = ChronoUnit.DAYS.between(minDate, splitEvent.date).toInt()
+                    val eventX = eventOffsetDays * dayWidth.roundToPx() + (splitEvent.col * (dayWidth.toPx() / splitEvent.colTotal.toFloat())).roundToInt()
+                    placeable.place(eventX, eventY)
+                    Log.d("BasicSchedule", "Layout width: $width, Layout height: $height")
+                }
             }
         }
     }
 }
 
+@Composable
+fun DisplaySchedule(viewModel: MainViewModel){
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val dayWidth = screenWidth / 7 // Calculate the width for each day
+
+    // State to keep track of the current week's start and end dates
+    var currentWeekStart by remember { mutableStateOf(LocalDate.now().with(DayOfWeek.MONDAY)) }
+    var currentWeekEnd by remember { mutableStateOf(LocalDate.now().with(DayOfWeek.SUNDAY)) }
+
+    // Function to move to the previous week
+    val onPreviousWeekClicked = {
+        currentWeekStart = currentWeekStart.minusWeeks(1)
+        currentWeekEnd = currentWeekEnd.minusWeeks(1)
+    }
+
+    // Function to move to the next week
+    val onNextWeekClicked = {
+        currentWeekStart = currentWeekStart.plusWeeks(1)
+        currentWeekEnd = currentWeekEnd.plusWeeks(1)
+    }
+
+    Column {
+        // Place the navigation arrows here
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primary),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(onClick = onPreviousWeekClicked) {
+                Icon(Icons.Default.ArrowBack,
+                    contentDescription = "Previous Week",
+                    tint = MaterialTheme.colorScheme.onPrimary)
+            }
+
+            IconButton(onClick = onNextWeekClicked) {
+                Icon(Icons.Default.ArrowForward,
+                    contentDescription = "Next Week",
+                    tint = MaterialTheme.colorScheme.onPrimary)
+            }
+        }
+
+        // Render the schedule with the current week's dates
+        Schedule(
+            events = viewModel.events,
+            startDay = currentWeekStart,
+            endDay = currentWeekEnd,
+            dayWidth = dayWidth,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
 
 @Composable
-fun CalendarScreen(navController: NavController) {
+fun CalendarScreen(navController: NavController, viewModel: MainViewModel) {
     TTHTheme {
         PopupTheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                Schedule(sampleEvents)
-            }
+                DisplaySchedule(viewModel)            }
         }
     }
 }

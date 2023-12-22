@@ -30,7 +30,6 @@ import androidx.compose.material3.TimeInput
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,16 +44,20 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.text.isDigitsOnly
 import com.tasktrackinghelp.tth.DateDefaults.DATE_LENGTH
 import com.tasktrackinghelp.tth.DateDefaults.DATE_MASK
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun customTextField(){
-    var value by remember { mutableStateOf("") }
+fun customTextField(value: String, onValueChange: (String) -> Unit){
 
     OutlinedTextField(
         value = value,
-        onValueChange = { value = it },
+        onValueChange = onValueChange,
         singleLine = true,
         modifier = Modifier.padding(20.dp),
         colors = OutlinedTextFieldDefaults.colors(
@@ -68,12 +71,11 @@ fun customTextField(){
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomMultilineText(){
-    var value by remember { mutableStateOf("") }
+fun CustomMultilineText(value: String, onValueChange: (String) -> Unit){
 
     OutlinedTextField(
         value = value,
-        onValueChange = { value = it },
+        onValueChange = onValueChange,
         singleLine = false,
         modifier = Modifier.padding(20.dp),
         colors = OutlinedTextFieldDefaults.colors(
@@ -87,16 +89,10 @@ fun CustomMultilineText(){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateTextField() {
-    var date by remember { mutableStateOf("") }
+fun DateTextField(date: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
         value = date,
-        onValueChange = {
-            if (it.length <= DATE_LENGTH) {
-                if (it.isDigitsOnly()) date = it
-                date = it
-            }
-        },
+        onValueChange = onValueChange,
         label = {Text("")},
         placeholder = {Text("DD/MM/YYYY")},
         visualTransformation = MaskVisualTransformation(DATE_MASK),
@@ -122,29 +118,24 @@ object DateDefaults {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun time(){
+fun time(
+    selectedHour: Int,
+    selectedMinute: Int,
+    label: String,
+    modifier: Modifier,
+    onTimeSelected: (Int, Int) -> Unit,
+
+){
 
 
-    var selectedHour by remember {
-        mutableIntStateOf(0) // or use  mutableStateOf(0)
-    }
-
-    var selectedMinute by remember {
-        mutableIntStateOf(0) // or use  mutableStateOf(0)
-    }
-
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-
+    var showDialog by remember { mutableStateOf(false) }
     val timePickerState = rememberTimePickerState(
         initialHour = selectedHour,
         initialMinute = selectedMinute
     )
 
-    var enteredValue by remember {
-        mutableStateOf("Selected H:M = $selectedHour : $selectedMinute")
-    }
+    val formattedTime = "${selectedHour.toString().padStart(2, '0')} : ${selectedMinute.toString().padStart(2, '0')}"
+
     if (showDialog) {
         AlertDialog(
             modifier = Modifier
@@ -183,8 +174,7 @@ fun time(){
                     TextButton(
                         onClick = {
                             showDialog = false
-                            selectedHour = timePickerState.hour
-                            selectedMinute = timePickerState.minute
+                            onTimeSelected(timePickerState.hour, timePickerState.minute)
                         }
                     ) {
                         Text(text = "Confirm")
@@ -198,8 +188,8 @@ fun time(){
        verticalAlignment = Alignment.CenterVertically,
        horizontalArrangement =  Arrangement.spacedBy(25.dp)
    ){
-       OutlinedTextField(value = "$selectedHour : $selectedMinute",
-           label = { Text(text = "Start") },
+       OutlinedTextField(value = formattedTime,
+           label = { Text(text = label) },
            trailingIcon = { IconButton(onClick = {
                showDialog = true
            }) {
@@ -224,43 +214,38 @@ fun time(){
                disabledTrailingIconColor = MaterialTheme.colorScheme.primary
            )
        )
-       OutlinedTextField(value = "$selectedHour : $selectedMinute",
-           label = { Text(text = "End") },
-           trailingIcon = { IconButton(onClick = {
-               showDialog = true
-           }) {
-               Icon(Icons.Default.Edit, contentDescription = null)}
-           },
-           onValueChange = {
-           },
-           enabled = false,
-           modifier = Modifier
-               .width(130.dp)
-               .height(60.dp)
-               .padding(end = 20.dp),
-           colors = OutlinedTextFieldDefaults.colors(
-               focusedBorderColor = MaterialTheme.colorScheme.primary,
-               focusedTextColor = Color.Black,
-               cursorColor = Color.Black,
-               unfocusedTextColor = Color.Black,
-               disabledPlaceholderColor = Color.Black,
-               unfocusedPlaceholderColor = Color.Gray,
-               disabledTextColor = Color.Gray,
-               disabledBorderColor = Color.Gray,
-               disabledLabelColor = Color.Gray,
-               disabledTrailingIconColor = MaterialTheme.colorScheme.primary
-           )
-       )
    }
 
-    
+
+
+    fun parseDate(input: String): LocalDate? {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            LocalDate.parse(input, formatter)
+        } catch (e: DateTimeParseException) {
+            null
+        }
+    }
 }
 @Composable
-fun CustomDialog(
+fun AddTaskDialog(
+    viewModel: MainViewModel,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
+    onConfirm: (Event) -> Unit,
 ) {
+    // State variables for each input field
+    var taskName by remember { mutableStateOf("") }
+    var taskDescription by remember { mutableStateOf("") }
+    var taskDate by remember { mutableStateOf("") } // Use a suitable format, e.g., "yyyy-MM-dd"
+    var startTime by remember { mutableStateOf(LocalTime.now()) }
+    var endTime by remember { mutableStateOf(LocalTime.now().plusHours(1)) }
 
+    var startTimeHour by remember { mutableStateOf(0) }
+    var startTimeMinute by remember { mutableStateOf(0) }
+    var endTimeHour by remember { mutableStateOf(0) }
+    var endTimeMinute by remember { mutableStateOf(0) }
+
+    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     Dialog(
         onDismissRequest = {
             onDismiss
@@ -275,7 +260,7 @@ fun CustomDialog(
                 .fillMaxWidth(0.95f)
                 .border(1.dp, MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(15.dp)),
             colors = CardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = Color.White,
                 contentColor = MaterialTheme.colorScheme.primary,
                 disabledContainerColor = MaterialTheme.colorScheme.primary,
                 disabledContentColor = MaterialTheme.colorScheme.primary,
@@ -310,7 +295,10 @@ fun CustomDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Task Name")
-                        customTextField()
+                        customTextField(
+                            value = taskName,
+                            onValueChange = { taskName = it }
+                        )
                     }
                     //Task Date
                     Row(
@@ -320,7 +308,15 @@ fun CustomDialog(
 
                     ) {
                         Text("Task Date")
-                        DateTextField()
+                        DateTextField(
+                            date = taskDate,
+                            onValueChange = {
+                                if (it.length <= DATE_LENGTH) {
+                                    if (it.isDigitsOnly()) taskDate = it
+                                    taskDate = it
+                                }
+                            }
+                        )
                     }
                     //Task Time
                     Row(
@@ -329,7 +325,20 @@ fun CustomDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Task Time")
-                        time()
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ){
+                            time(startTimeHour, startTimeMinute, label = "Start", modifier = Modifier.padding(horizontal = 5.dp)) { hour, minute ->
+                                startTimeHour = hour
+                                startTimeMinute = minute
+
+                            }
+                            time(endTimeHour, endTimeMinute, label = "End", modifier = Modifier.padding(horizontal = 5.dp)) { hour, minute ->
+                                endTimeHour = hour
+                                endTimeMinute = minute
+                            }
+                        }
+
                     }
                     //Task Description
                     Row(
@@ -338,7 +347,10 @@ fun CustomDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Task Description")
-                        CustomMultilineText()
+                        CustomMultilineText(
+                            value = taskDescription,
+                            onValueChange = { taskDescription = it }
+                        )
                     }
 
                 }
@@ -366,8 +378,21 @@ fun CustomDialog(
                         )
                     }
                     Button(
-                        onClick = {
-                            onConfirm()
+                            onClick = {
+                                val dateFormatter = DateTimeFormatter.ofPattern("ddMMyyyy")
+                                val parsedDate = LocalDate.parse(taskDate, dateFormatter)
+                                val startDateTime = LocalDateTime.of(parsedDate, LocalTime.of(startTimeHour, startTimeMinute))
+                                val endDateTime = LocalDateTime.of(parsedDate, LocalTime.of(endTimeHour, endTimeMinute))
+                                // Create an Event object from the state variables
+                                val event = Event(
+                                    name = taskName,
+                                    color = Color(0xFFAFBBF2), // Use an appropriate color
+                                    start = startDateTime,
+                                    end = endDateTime,
+                                    description = taskDescription
+                                )
+                                viewModel.addEvent(event)
+                                onDismiss()
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,

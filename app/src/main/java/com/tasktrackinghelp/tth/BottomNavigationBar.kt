@@ -22,7 +22,9 @@ import androidx.navigation.compose.rememberNavController
 
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(
+    viewModel : MainViewModel
+) {
     var navigationSelectedItem by remember {
         mutableStateOf(0)
     }
@@ -81,7 +83,7 @@ fun BottomNavigationBar() {
             }
             composable(Screens.Calendar.route) {
                 CalendarScreen(
-                    navController
+                    navController, viewModel
                 )
             }
             composable(Screens.Profile.route) {

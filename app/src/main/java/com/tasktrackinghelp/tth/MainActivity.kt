@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
             TTHTheme {
                 // A surface container using the 'background' color from the theme
                 PopupTheme {
-                    BottomNavigationBar()                }
+                    BottomNavigationBar(viewModel)                }
             }
         }
     }
@@ -35,6 +35,6 @@ fun GreetingPreview() {
     val viewModel = MainViewModel() // Create an instance of your ViewModel
     TTHTheme {
         PopupTheme {
-            Schedule(sampleEvents)    }
+BottomNavigationBar(viewModel)        }
     }
 }
