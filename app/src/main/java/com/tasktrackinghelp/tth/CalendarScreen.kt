@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +45,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -163,9 +163,7 @@ private val sampleEvents = mutableListOf<Event>().apply {
         )
     }
 }
-class EventsProvider : PreviewParameterProvider<Event> {
-    override val values = sampleEvents.asSequence()
-}
+
 
 
 
@@ -531,6 +529,7 @@ fun BasicSchedule(
 
 @Composable
 fun DisplaySchedule(viewModel: MainViewModel){
+    val events by viewModel.events.collectAsState()
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val dayWidth = screenWidth / 7 // Calculate the width for each day
 
@@ -570,9 +569,10 @@ fun DisplaySchedule(viewModel: MainViewModel){
             }
         }
 
+
         // Render the schedule with the current week's dates
         Schedule(
-            events = viewModel.events,
+            events = sampleEvents,
             startDay = currentWeekStart,
             endDay = currentWeekEnd,
             dayWidth = dayWidth,

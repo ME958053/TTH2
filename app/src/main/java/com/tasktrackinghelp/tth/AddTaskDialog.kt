@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePickerColors
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -141,7 +142,7 @@ fun time(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = MaterialTheme.colorScheme.surface,
+                    color = Color.White,
                     shape = RoundedCornerShape(size = 12.dp)
                 ),
             onDismissRequest = { showDialog = false }
@@ -156,7 +157,26 @@ fun time(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // time picker
-                TimeInput(state = timePickerState)
+                TimeInput(state = timePickerState
+                ,colors = TimePickerColors(
+                        clockDialColor = MaterialTheme.colorScheme.primary,
+                        selectorColor = MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                periodSelectorBorderColor = MaterialTheme.colorScheme.primary,
+                clockDialSelectedContentColor =MaterialTheme.colorScheme.onPrimary,
+                        clockDialUnselectedContentColor = MaterialTheme.colorScheme.onPrimary,
+                periodSelectorSelectedContainerColor = MaterialTheme.colorScheme.primary,
+                periodSelectorUnselectedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                periodSelectorSelectedContentColor = MaterialTheme.colorScheme.onPrimary,
+                periodSelectorUnselectedContentColor = MaterialTheme.colorScheme.primary,
+                timeSelectorSelectedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                timeSelectorUnselectedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                timeSelectorSelectedContentColor = MaterialTheme.colorScheme.primary,
+                timeSelectorUnselectedContentColor = MaterialTheme.colorScheme.primary
+                )
+
+                )
+
 
                 // buttons
                 Row(
@@ -199,7 +219,7 @@ fun time(
            },
            enabled = false,
            modifier = Modifier
-               .width(130.dp)
+               .width(100.dp)
                .height(60.dp),
            colors = OutlinedTextFieldDefaults.colors(
                focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -245,6 +265,10 @@ fun AddTaskDialog(
     var endTimeHour by remember { mutableStateOf(0) }
     var endTimeMinute by remember { mutableStateOf(0) }
 
+
+    // Check if all required fields are filled
+    val isFormValid = taskName.isNotBlank() && taskDate.isNotBlank()
+            && taskDescription.isNotBlank() // Add other checks if needed
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     Dialog(
         onDismissRequest = {
@@ -272,8 +296,7 @@ fun AddTaskDialog(
                     .fillMaxWidth()
                     .padding(15.dp)
                 ,
-                verticalArrangement = Arrangement.SpaceEvenly
-
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
                     text = "Add Task",
@@ -374,7 +397,7 @@ fun AddTaskDialog(
                         Text(
                             text = "Cancel",
                             fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.headlineSmall
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                     Button(
@@ -396,16 +419,19 @@ fun AddTaskDialog(
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = Color.Gray,
+                            disabledContentColor = Color.LightGray
                         ),
                         modifier = Modifier
                             .padding(20.dp),
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(8.dp),
+                        enabled = isFormValid
                     ) {
                         Text(
                             text = "Confirm",
                             fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.headlineSmall
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }

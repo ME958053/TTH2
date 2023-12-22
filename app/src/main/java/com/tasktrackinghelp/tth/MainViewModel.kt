@@ -1,19 +1,21 @@
 package com.tasktrackinghelp.tth
 
-import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalDate
 
 class MainViewModel : ViewModel(){
-    var events = mutableStateListOf<Event>()
+    private val _events = MutableStateFlow<List<Event>>(emptyList())
+    val events = _events.asStateFlow()
+
     fun addEvent(event: Event) {
-        events.add(event)
-        Log.d("MainViewModel", "Event added: $event, $events",)
+        _events.value = _events.value + event
     }
+
     var selectedDate by mutableStateOf(LocalDate.now())
         private set
 

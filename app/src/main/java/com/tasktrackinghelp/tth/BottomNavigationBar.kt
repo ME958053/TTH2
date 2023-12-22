@@ -86,8 +86,8 @@ fun BottomNavigationBar(
                     navController, viewModel
                 )
             }
-            composable(Screens.Profile.route) {
-                ProfileScreen(
+            composable(Screens.Settings.route) {
+                SettingsScreen(
                     navController
                 )
             }

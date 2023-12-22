@@ -29,7 +29,7 @@ data class BottomNavigationItem(
             BottomNavigationItem(
                 label = "Settings",
                 icon = Icons.Filled.Settings,
-                route = Screens.Profile.route
+                route = Screens.Settings.route
             ),
         )
     }

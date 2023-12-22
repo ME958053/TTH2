@@ -10,16 +10,29 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\ebrah\.android\avd\Pixel_2_API_34.avd" />
+                  <value value="C:\Users\ebrah\.android\avd\Pixel_2_API_27.avd" />
                 </Key>
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2023-12-19T19:11:00.547177Z" />
+          <timeTargetWasSelectedWithDropDown value="2023-12-22T14:22:35.975566500Z" />
         </State>
       </entry>
       <entry key="app">
-        <State />
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\ebrah\.android\avd\Pixel_2_API_27.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2023-12-22T14:27:50.637441800Z" />
+        </State>
       </entry>
     </value>
   </component>
